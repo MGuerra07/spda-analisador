@@ -23,7 +23,6 @@ def gerar_pdf_relatorio(dados, resultado):
     status = "OBRIGATÓRIO" if resultado["necessita_spda"] else "NÃO OBRIGATÓRIO"
     pdf.cell(0, 10, f"Necessidade de SPDA: {status}", ln=True)
 
-    # Salva em memória
     pdf_output = BytesIO()
     pdf.output(pdf_output)
     pdf_output.seek(0)
