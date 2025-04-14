@@ -20,6 +20,7 @@ def gerar_pdf_relatorio(dados, resultado):
     pdf.cell(0, 10, "Resultado:", ln=True)
     pdf.cell(0, 10, f"Risco Total (R): {resultado['R_total']:.2e}", ln=True)
     pdf.cell(0, 10, f"Risco Tolerável (R_T): {resultado['R_toleravel']:.1e}", ln=True)
+    pdf.cell(0, 10, f"Nível de Proteção Necessário: {resultado['nivel_protecao']}", ln=True)
     status = "OBRIGATÓRIO" if resultado["necessita_spda"] else "NÃO OBRIGATÓRIO"
     pdf.cell(0, 10, f"Necessidade de SPDA: {status}", ln=True)
 

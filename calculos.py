@@ -1,16 +1,28 @@
-def calcular_risco_total(dados):
-    # Parâmetros de entrada
-    N_g = dados["isoceraunico"]      # tempestades por ano
-    A_eq = dados["area"] / 1e6       # área da edificação em km²
-    N_d = 3                          # descargas por tempestade (valor padrão da NBR)
-    P_h = 0.1                        # fator de perda humana (simplificado)
+def determinar_nivel_protecao(R):
+    if R > 1e-2:
+        return "Excede Nível IV (Risco muito alto)"
+    elif R > 1e-3:
+        return "Nível IV"
+    elif R > 1e-4:
+        return "Nível III"
+    elif R > 1e-5:
+        return "Nível II"
+    else:
+        return "Nível I"
 
-    # Cálculo de risco à vida humana (R_A)
+def calcular_risco_total(dados):
+    N_g = dados["isoceraunico"]
+    A_eq = dados["area"] / 1e6
+    N_d = 3
+    P_h = 0.1
+
     R_A = N_g * A_eq * N_d * P_h
+    nivel = determinar_nivel_protecao(R_A)
 
     resultado = {
-        "R_total": R_A,              # neste estágio, só R_A está sendo calculado
-        "R_toleravel": 1e-5,         # valor tolerável para vida humana
+        "R_total": R_A,
+        "R_toleravel": 1e-5,
+        "nivel_protecao": nivel,
         "necessita_spda": R_A > 1e-5
     }
     return resultado

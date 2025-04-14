@@ -7,7 +7,6 @@ st.set_page_config(page_title="SPDA - Análise de Risco", layout="centered")
 st.markdown("## ⚡ Analisador de Risco SPDA (NBR 5419)")
 st.markdown("Preencha os dados da estrutura abaixo para avaliar a necessidade de proteção contra descargas atmosféricas.")
 
-# Layout com duas colunas
 col1, col2 = st.columns(2)
 
 with st.form("formulario_spda"):
@@ -40,6 +39,7 @@ if enviar:
         st.write(f"**Isoceraunico (N_g):** {isoceraunico}")
         st.write(f"**Risco Total (R):** {resultado['R_total']:.2e}")
         st.write(f"**Risco Tolerável (R_T):** {resultado['R_toleravel']:.1e}")
+        st.write(f"**Nível de Proteção Necessário:** {resultado['nivel_protecao']}")
 
         if resultado["necessita_spda"]:
             st.error("⚠️ SPDA OBRIGATÓRIO: o risco excede o tolerável.")
@@ -49,6 +49,5 @@ if enviar:
         pdf_bytes = gerar_pdf_relatorio(dados, resultado)
         st.download_button("📥 Baixar Relatório em PDF", data=pdf_bytes, file_name="relatorio_spda.pdf", mime="application/pdf")
 
-# Rodapé
 st.markdown("---")
 st.markdown("Desenvolvido por Marcelo Guerra | Projeto SPDA ⚙️")
