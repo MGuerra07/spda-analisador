@@ -2,20 +2,10 @@ import streamlit as st
 from calculos import calcular_risco_total
 from relatorio import gerar_pdf_relatorio
 
-st.set_page_config(page_title="Análise de Risco SPDA", layout="centered")
+st.set_page_config(page_title="SPDA - Análise de Risco", layout="centered")
 
-st.markdown(
-    "<h1 style='text-align: center; color: #00c8c8;'>⚡ Análise de Risco - SPDA</h1>",
-    unsafe_allow_html=True
-)
-
-st.image("https://via.placeholder.com/300x80.png?text=LOGO+SPDA", use_column_width=False)
-
-st.markdown("---")
-st.markdown(
-    "<p style='text-align: center;'>Preencha os dados da estrutura para calcular o risco de descargas atmosféricas conforme a NBR 5419.</p>",
-    unsafe_allow_html=True
-)
+st.markdown("## ⚡ Analisador de Risco SPDA (NBR 5419)")
+st.markdown("Preencha os dados da estrutura abaixo para calcular o risco de descargas atmosféricas.")
 
 with st.form("formulario_spda"):
     col1, col2 = st.columns(2)
@@ -23,6 +13,7 @@ with st.form("formulario_spda"):
     with col1:
         tipo_estrutura = st.selectbox("🏢 Tipo da Estrutura", ["Residencial", "Hospital", "Escola", "Indústria", "Comercial", "Outro"])
         area = st.number_input("📐 Área da Edificação (m²)", min_value=10.0)
+        altura = st.number_input("📏 Altura da Estrutura (m)", min_value=1.0)
         tipo_solo = st.selectbox("🧱 Tipo de Solo", ["Alta Resistividade", "Baixa Resistividade"])
 
     with col2:
@@ -35,6 +26,7 @@ if enviar:
     dados = {
         "tipo_estrutura": tipo_estrutura,
         "area": area,
+        "altura": altura,
         "numero_pessoas": numero_pessoas,
         "isoceraunico": isoceraunico,
         "tipo_solo": tipo_solo
@@ -42,22 +34,15 @@ if enviar:
 
     resultado = calcular_risco_total(dados)
 
-    st.markdown("---")
     st.markdown("### 📊 Resultado da Análise")
+    st.write(f"**Risco Total (R):** {resultado['R_total']:.2e}")
+    st.write(f"**Risco Tolerável:** {resultado['R_toleravel']:.1e}")
+    st.write(f"**Nível de Proteção Necessário:** {resultado['nivel_protecao']}")
 
-    col1, col2 = st.columns(2)
-    col1.metric("Risco Total (R)", f"{resultado['R_total']:.2e}")
-    col2.metric("Risco Tolerável", f"{resultado['R_toleravel']:.1e}")
-
-    st.info(f"🛡️ **Nível de Proteção Necessário:** {resultado['nivel_protecao']}")
-    
     if resultado["necessita_spda"]:
-        st.error("⚠️ SPDA OBRIGATÓRIO: o risco excede o tolerável.")
+        st.error("⚠️ SPDA OBRIGATÓRIO")
     else:
-        st.success("✅ SPDA NÃO OBRIGATÓRIO: risco dentro do tolerável.")
+        st.success("✅ SPDA NÃO OBRIGATÓRIO")
 
     pdf_bytes = gerar_pdf_relatorio(dados, resultado)
     st.download_button("📥 Baixar Relatório em PDF", data=pdf_bytes, file_name="relatorio_spda.pdf", mime="application/pdf")
-
-st.markdown("---")
-st.markdown("<p style='text-align: center; color: #888;'>Desenvolvido por Marcelo Guerra | Projeto SPDA ⚙️</p>", unsafe_allow_html=True)
