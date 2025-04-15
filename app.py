@@ -23,26 +23,29 @@ with st.form("formulario_spda"):
     enviar = st.form_submit_button("🚀 Calcular Risco")
 
 if enviar:
-    dados = {
-        "tipo_estrutura": tipo_estrutura,
-        "area": area,
-        "altura": altura,
-        "numero_pessoas": numero_pessoas,
-        "isoceraunico": isoceraunico,
-        "tipo_solo": tipo_solo
-    }
-
-    resultado = calcular_risco_total(dados)
-
-    st.markdown("### 📊 Resultado da Análise")
-    st.write(f"**Risco Total (R):** {resultado['R_total']:.2e}")
-    st.write(f"**Risco Tolerável:** {resultado['R_toleravel']:.1e}")
-    st.write(f"**Nível de Proteção Necessário:** {resultado['nivel_protecao']}")
-
-    if resultado["necessita_spda"]:
-        st.error("⚠️ SPDA OBRIGATÓRIO")
+    if isoceraunico == 0:
+        st.warning("⚠️ O valor de N_g (isoceraunico) não pode ser zero.")
     else:
-        st.success("✅ SPDA NÃO OBRIGATÓRIO")
+        dados = {
+            "tipo_estrutura": tipo_estrutura,
+            "area": area,
+            "altura": altura,
+            "numero_pessoas": numero_pessoas,
+            "isoceraunico": isoceraunico,
+            "tipo_solo": tipo_solo
+        }
 
-    pdf_bytes = gerar_pdf_relatorio(dados, resultado)
-    st.download_button("📥 Baixar Relatório em PDF", data=pdf_bytes, file_name="relatorio_spda.pdf", mime="application/pdf")
+        resultado = calcular_risco_total(dados)
+
+        with st.expander("📊 Resultado da Análise", expanded=True):
+            st.metric("Risco Total (R)", f"{resultado['R_total']:.2e}")
+            st.metric("Risco Tolerável", f"{resultado['R_toleravel']:.1e}")
+            st.info(f"Nível de Proteção: {resultado['nivel_protecao']}")
+
+            if resultado["necessita_spda"]:
+                st.error("⚠️ SPDA OBRIGATÓRIO")
+            else:
+                st.success("✅ SPDA NÃO OBRIGATÓRIO")
+
+            pdf_bytes = gerar_pdf_relatorio(dados, resultado)
+            st.download_button("📥 Baixar Relatório em PDF", data=pdf_bytes, file_name="relatorio_spda.pdf", mime="application/pdf")

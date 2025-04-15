@@ -14,9 +14,7 @@ def calcular_risco_total(dados):
     N_g = dados["isoceraunico"]
     area_m2 = dados["area"]
     altura = dados["altura"]
-    A_base = area_m2
-    fator_altura = altura * (area_m2 ** 0.5)
-    A_eq = A_base + fator_altura
+    A_eq = area_m2 + (altura * (area_m2 ** 0.5))
     A_eq_km2 = A_eq / 1e6
 
     N_d = 3
@@ -25,10 +23,9 @@ def calcular_risco_total(dados):
     R_A = N_g * A_eq_km2 * N_d * P_h
     nivel = determinar_nivel_protecao(R_A)
 
-    resultado = {
+    return {
         "R_total": R_A,
         "R_toleravel": 1e-5,
         "nivel_protecao": nivel,
         "necessita_spda": R_A > 1e-5
     }
-    return resultado
